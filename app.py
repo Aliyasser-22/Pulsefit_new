@@ -878,11 +878,9 @@ def food_search():
     def _groq_fail_payload():
         err = "لم نقدر نحدد الأكلة عبر Groq. جرّب اسم أوضح أو أضفها يدوياً."
         if not _groq_configured():
-            env_file = _APP_ROOT / ".env"
-            if not env_file.exists() or env_file.stat().st_size == 0:
-                err = "ملف .env فاضي أو مش محفوظ. افتح .env واضغط Ctrl+S ثم أعد تشغيل السيرفر."
-            else:
-                err = "مفتاح Groq مش موجود في .env. أضف سطر: GROQ_API_KEY=مفتاحك ثم Ctrl+S وأعد التشغيل."
+            # Check os.environ first (Railway injects vars directly, no .env file needed)
+            if not os.getenv("GROQ_API_KEY", "").strip():
+                err = "GROQ_API_KEY غير موجود. أضفه في Railway Dashboard → Variables."
             print("[food_search] GROQ_API_KEY missing — Groq skipped")
         return {"found": False, "query": q, "ai_attempted": True, "groq_error": err}
 
