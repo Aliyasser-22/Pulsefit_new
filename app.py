@@ -38,10 +38,17 @@ def _parse_env_bytes(raw: bytes) -> dict:
 
 
 def _load_project_env():
-    """Load .env from project folder (supports UTF-8 and Windows UTF-16 saves)."""
+    """Load .env from project folder (supports UTF-8 and Windows UTF-16 saves).
+    On Railway, env vars are injected directly — .env file may not exist, and that's fine.
+    Never overwrite an already-set env var (Railway-injected vars take priority)."""
+    # If GROQ_API_KEY is already set (e.g. by Railway dashboard), nothing to do
+    if os.getenv("GROQ_API_KEY", "").strip():
+        print("[env] GROQ_API_KEY already set via environment (Railway/system)")
+        return
+
     env_file = _APP_ROOT / ".env"
     if not env_file.exists():
-        print(f"[env] .env not found at {env_file}")
+        print(f"[env] .env not found at {env_file} — set GROQ_API_KEY in Railway dashboard")
         return
 
     size = env_file.stat().st_size
@@ -51,7 +58,8 @@ def _load_project_env():
 
     raw = env_file.read_bytes()
     for key, val in _parse_env_bytes(raw).items():
-        os.environ[key] = val
+        if not os.environ.get(key):   # don't overwrite Railway-injected vars
+            os.environ[key] = val
 
     if os.getenv("GROQ_API_KEY", "").strip():
         print(f"[env] GROQ_API_KEY OK ({size} byte .env)")
@@ -75,8 +83,9 @@ def _load_pose_model():
     """Load YOLO only when workout/camera is used (saves ~2GB if you only need Nutrition)."""
     global pose_model
     if pose_model is None:
-        if not os.path.exists("yolo11n-pose.pt"):
-            raise FileNotFoundError("yolo11n-pose.pt model not found")
+        model_path = str(_APP_ROOT / "yolo11n-pose.pt")
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"yolo11n-pose.pt model not found at {model_path}")
         try:
             from ultralytics import YOLO
         except ImportError as e:
@@ -84,7 +93,7 @@ def _load_pose_model():
                 "Workout camera needs ultralytics (large download). "
                 "Free disk space, then: py -m pip install ultralytics"
             ) from e
-        pose_model = YOLO("yolo11n-pose.pt")
+        pose_model = YOLO(model_path)
 
 # ══════════════════════════════════════════════════════════════
 # DATABASE SETUP (SQLite)
@@ -482,8 +491,8 @@ def register():
     password =  data.get("password") or ""
     if not username or not email or not password:
         return jsonify({"error": "All fields required"}), 400
-    if len(password) < 6:
-        return jsonify({"error": "Password must be at least 6 characters"}), 400
+    if len(password) < 8:
+        return jsonify({"error": "Password must be at least 8 characters"}), 400
     try:
         with get_db() as conn:
             conn.execute(
@@ -852,7 +861,7 @@ def _food_search_results(foods, grams, match_type, query=""):
 
 
 def _groq_configured():
-    """Re-read .env each request (in case user just saved the file)."""
+    """Check if GROQ_API_KEY is available (env var or .env file)."""
     _load_project_env()
     return bool(os.getenv("GROQ_API_KEY", "").strip())
 
@@ -1340,7 +1349,12 @@ def workout_start():
     if key not in EXERCISE_MAP: return jsonify({"error": f"Unknown: {key}"}), 400
     with workout_lock:
         if workout_state["running"]: return jsonify({"error": "Already running"}), 409
-    _load_pose_model(); t = _load_trainer(key, lang)
+    try:
+        _load_pose_model()
+    except (FileNotFoundError, ImportError, Exception) as e:
+        print(f"[workout_start] model load error: {e}")
+        return jsonify({"error": f"Model load failed: {e}"}), 503
+    t = _load_trainer(key, lang)
     if t is None: return jsonify({"error": f"Load failed: {key}"}), 500
     current_trainer = t
     with workout_lock:

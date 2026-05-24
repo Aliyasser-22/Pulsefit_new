@@ -46,8 +46,8 @@
     </div>
     <div class="field">
       <label>Password</label>
-      <input type="password" id="password" placeholder="Min 6 characters" autocomplete="new-password">
-      <p class="hint">At least 6 characters</p>
+      <input type="password" id="password" placeholder="Min 8 characters" autocomplete="new-password">
+      <p class="hint">At least 8 characters</p>
     </div>
     <div class="field">
       <label>Confirm Password</label>
@@ -68,7 +68,7 @@
       const confirm=document.getElementById('confirm').value;
       if(!username||!email||!password||!confirm){showErr('Please fill in all fields.');return;}
       if(password!==confirm){showErr('Passwords do not match.');return;}
-      if(password.length<6){showErr('Password must be at least 6 characters.');return;}
+      if(password.length<8){showErr('Password must be at least 8 characters.');return;}
       btn.disabled=true;btn.textContent='Creating account...';
       try{
         const res=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});
