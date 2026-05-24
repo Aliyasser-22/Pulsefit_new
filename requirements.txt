@@ -1,4 +1,5 @@
 flask>=3.0
+ultralytics>=8.0
 opencv-python-headless>=4.9
 gtts>=2.5
 pygame>=2.5
