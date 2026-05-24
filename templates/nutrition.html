@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#e8f04a">
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PulseFit | Nutrition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap">
+  <style>
+    :root {
+      --navy: #0d1b2a;
+      --navy2: #132236;
+      --navy3: #1a2f47;
+      --navy4: #0a1520;
+      --accent: #e8f04a;
+      --accent2: #4af0c8;
+      --white: #f0f4f8;
+      --muted: #7a90a8;
+      --muted2: #4a6280;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.07);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --ease: 0.2s ease;
+      --c-cal: #f97316;
+      --c-prot: #34d399;
+      --c-carb: #60a5fa;
+      --c-fat: #facc15;
+      --red: #e53e3e
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: radial-gradient(ellipse at 20% 0%, rgba(52, 211, 153, 0.04) 0%, transparent 40%)
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 21, 32, 0.95);
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(16px) saturate(140%)
+    }
+
+    nav {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.55rem;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity var(--ease)
+    }
+
+    .logo:hover {
+      opacity: 0.85
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      margin-left: auto
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .88rem;
+      font-weight: 500;
+      transition: color var(--ease);
+      padding-bottom: 2px;
+      border-bottom: 2px solid transparent
+    }
+
+    .nav-links a:hover {
+      color: var(--white)
+    }
+
+    .nav-links a.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent)
+    }
+
+    .nav-toggle {
+      display: none;
+      margin-left: auto;
+      background: none;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--white);
+      padding: 6px 8px;
+      cursor: pointer;
+      align-items: center
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: rgba(10, 21, 32, 0.98);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 1.5rem;
+      flex-direction: column;
+      gap: 0;
+      z-index: 99
+    }
+
+    .mobile-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .95rem;
+      font-weight: 500;
+      padding: .75rem 0;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .mobile-nav a:last-child {
+      border: none
+    }
+
+    .mobile-nav a.active,
+    .mobile-nav a:hover {
+      color: var(--white)
+    }
+
+    .mobile-nav.open {
+      display: flex
+    }
+
+    main {
+      flex: 1;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem
+    }
+
+    .page-header {
+      margin-bottom: 1.5rem
+    }
+
+    .eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--c-prot);
+      margin-bottom: 4px
+    }
+
+    .page-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 3px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .page-header h1 span {
+      color: var(--accent)
+    }
+
+    .page-header h1 .h1-icon {
+      color: var(--accent2);
+      flex-shrink: 0
+    }
+
+    .page-header p {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: 5px
+    }
+
+    .summary-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.75rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1.5rem;
+      align-items: start
+    }
+
+    .summary-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem
+    }
+
+    .sum-card {
+      background: var(--navy4);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      text-align: center;
+      transition: border-color var(--ease), transform var(--ease)
+    }
+
+    .sum-card:hover {
+      transform: translateY(-2px)
+    }
+
+    .sum-card .s-label {
+      font-size: .64rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 5px
+    }
+
+    .sum-card .s-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.9rem;
+      line-height: 1
+    }
+
+    .sum-card.cal .s-value {
+      color: var(--c-cal)
+    }
+
+    .sum-card.prot .s-value {
+      color: var(--c-prot)
+    }
+
+    .sum-card.carb .s-value {
+      color: var(--c-carb)
+    }
+
+    .sum-card.fat .s-value {
+      color: var(--c-fat)
+    }
+
+    .sum-card .s-remain {
+      font-size: .64rem;
+      color: var(--muted2);
+      margin-top: 3px
+    }
+
+    .sum-card .s-remain.over {
+      color: var(--red)
+    }
+
+    .goal-bars {
+      min-width: 240px;
+      display: grid;
+      gap: 9px
+    }
+
+    .goal-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2px
+    }
+
+    .goal-row {
+      display: grid;
+      grid-template-columns: 60px 1fr 50px;
+      align-items: center;
+      gap: 8px
+    }
+
+    .goal-name {
+      font-size: .74rem;
+      font-weight: 600;
+      color: var(--muted)
+    }
+
+    .bar-track {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      position: relative
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width .6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-width: 100%
+    }
+
+    .bar-fill.cal {
+      background: var(--c-cal)
+    }
+
+    .bar-fill.prot {
+      background: var(--c-prot)
+    }
+
+    .bar-fill.carb {
+      background: var(--c-carb)
+    }
+
+    .bar-fill.fat {
+      background: var(--c-fat)
+    }
+
+    .bar-fill.over {
+      background: #e53e3e
+    }
+
+    .goal-pct {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--white);
+      text-align: right
+    }
+
+    .meals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem
+    }
+
+    .meal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color var(--ease)
+    }
+
+    .meal-card:hover {
+      border-color: rgba(255, 255, 255, 0.12)
+    }
+
+    .meal-card.breakfast {
+      border-top: 2px solid #38bdf8
+    }
+
+    .meal-card.lunch {
+      border-top: 2px solid var(--c-prot)
+    }
+
+    .meal-card.dinner {
+      border-top: 2px solid var(--c-fat)
+    }
+
+    .meal-card.snacks {
+      border-top: 2px solid #f472b6
+    }
+
+    .meal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .meal-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .breakfast .meal-icon {
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8
+    }
+
+    .lunch .meal-icon {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--c-prot)
+    }
+
+    .dinner .meal-icon {
+      background: rgba(250, 204, 21, 0.12);
+      color: var(--c-fat)
+    }
+
+    .snacks .meal-icon {
+      background: rgba(244, 114, 182, 0.12);
+      color: #f472b6
+    }
+
+    .meal-title {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--white)
+    }
+
+    .meal-sub {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 72px auto;
+      gap: 6px;
+      align-items: center
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      background: var(--navy2);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 11px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .82rem;
+      width: 100%;
+      outline: none;
+      transition: border-color var(--ease), box-shadow var(--ease)
+    }
+
+    input::placeholder {
+      color: var(--muted)
+    }
+
+    input:focus {
+      border-color: rgba(232, 240, 74, 0.35);
+      box-shadow: 0 0 0 3px rgba(232, 240, 74, 0.05)
+    }
+
+    .btn-search {
+      padding: 8px 12px;
+      background: var(--accent);
+      color: var(--navy);
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: .8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--ease)
+    }
+
+    .btn-search:hover {
+      background: #d4da40
+    }
+
+    .btn-add {
+      width: 100%;
+      padding: 9px;
+      background: rgba(232, 240, 74, 0.08);
+      color: var(--accent);
+      border: 1px solid rgba(232, 240, 74, 0.2);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: .82rem;
+      cursor: pointer;
+      transition: all var(--ease)
+    }
+
+    .btn-add:hover {
+      background: rgba(232, 240, 74, 0.16);
+      border-color: rgba(232, 240, 74, 0.35)
+    }
+
+    .btn-log {
+      width: 100%;
+      padding: 7px;
+      background: rgba(74, 240, 200, 0.08);
+      color: var(--accent2);
+      border: 1px solid rgba(74, 240, 200, 0.18);
+      border-radius: 7px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: .78rem;
+      cursor: pointer;
+      transition: all var(--ease);
+      margin-top: 7px
+    }
+
+    .btn-log:hover {
+      background: rgba(74, 240, 200, 0.16)
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .66rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--card-border)
+    }
+
+    .custom-form {
+      display: grid;
+      gap: 6px
+    }
+
+    .custom-section {
+      display: none
+    }
+
+    .custom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px
+    }
+
+    .result-box {
+      background: var(--navy2);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px;
+      display: none;
+      font-size: .82rem;
+      max-height: 300px;
+      overflow-y: auto
+    }
+
+    .result-box::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .result-box::-webkit-scrollbar-thumb {
+      background: var(--navy3);
+      border-radius: 3px
+    }
+
+    .food-name {
+      font-weight: 600;
+      font-size: .85rem;
+      color: var(--white);
+      margin-bottom: 6px
+    }
+
+    .macros-row {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap
+    }
+
+    .macro-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: .75rem
+    }
+
+    .macro-pill .m-val {
+      font-weight: 600
+    }
+
+    .macro-pill .m-lbl {
+      color: var(--muted);
+      font-size: .65rem
+    }
+
+    .macro-pill.cal .m-val {
+      color: var(--c-cal)
+    }
+
+    .macro-pill.prot .m-val {
+      color: var(--c-prot)
+    }
+
+    .macro-pill.carb .m-val {
+      color: var(--c-carb)
+    }
+
+    .macro-pill.fat .m-val {
+      color: var(--c-fat)
+    }
+
+    .result-item {
+      border: 1px solid var(--card-border);
+      border-radius: 9px;
+      padding: 10px;
+      margin-bottom: 7px;
+      background: rgba(255, 255, 255, 0.02)
+    }
+
+    .food-log {
+      display: grid;
+      gap: 5px
+    }
+
+    .log-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 7px 11px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .li-name {
+      color: var(--white);
+      font-weight: 500;
+      font-size: .8rem
+    }
+
+    .li-cal {
+      color: var(--c-cal);
+      font-weight: 600;
+      font-size: .8rem;
+      flex-shrink: 0;
+      margin-left: 8px
+    }
+
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-decoration: none
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      flex-wrap: wrap
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .82rem;
+      transition: color var(--ease)
+    }
+
+    .footer-links a:hover {
+      color: var(--white)
+    }
+
+    .footer-copy {
+      color: var(--muted2);
+      font-size: .78rem
+    }
+
+    @media(max-width:900px) {
+      .nav-links {
+        display: none
+      }
+
+      .nav-toggle {
+        display: flex
+      }
+    }
+
+    @media(max-width:768px) {
+      .summary-section {
+        grid-template-columns: 1fr
+      }
+
+      .summary-bar {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .goal-bars {
+        min-width: 0
+      }
+
+      nav {
+        padding: 0 .75rem
+      }
+
+      main {
+        padding: 1.25rem .75rem 2rem
+      }
+    }
+
+    @media(max-width:600px) {
+      .summary-bar {
+        grid-template-columns: 1fr 1fr;
+        gap: .6rem
+      }
+
+      .sum-card .s-value {
+        font-size: 1.5rem
+      }
+
+      .sum-card .s-label {
+        font-size: .58rem
+      }
+
+      .page-header h1 {
+        font-size: 1.8rem
+      }
+
+      .meals-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem
+      }
+
+      .meal-card {
+        padding: 1rem
+      }
+
+      .search-row {
+        grid-template-columns: 1fr auto
+      }
+
+      .search-row input[type="number"] {
+        display: none
+      }
+
+      .goal-row {
+        grid-template-columns: 50px 1fr 40px;
+        gap: 6px
+      }
+
+      .goal-name {
+        font-size: .68rem
+      }
+
+      .goal-pct {
+        font-size: .68rem
+      }
+
+      footer {
+        padding: 1rem .75rem;
+        flex-direction: column;
+        align-items: center;
+        text-align: center
+      }
+
+      .footer-links {
+        justify-content: center
+      }
+    }
+
+    @media(max-width:400px) {
+      .summary-bar {
+        gap: .4rem
+      }
+
+      .custom-row {
+        grid-template-columns: 1fr
+      }
+
+      .meal-title {
+        font-size: .82rem
+      }
+
+      .search-row {
+        gap: 4px
+      }
+
+      .btn-search {
+        padding: 7px 10px;
+        font-size: .75rem
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav>
+      <a href="/" class="logo">PulseFit</a>
+      <ul class="nav-links">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/nutrition" class="active">Nutrition</a></li>
+        <li><a href="/workout">Workout</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/logout" style="color:#f87171">Logout</a></li>
+      </ul>
+      <button class="nav-toggle" onclick="toggleMobileNav()" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+    </nav>
+  </header>
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="/dashboard"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round">
+        <rect x="3" y="3" width="7" height="7" />
+        <rect x="14" y="3" width="7" height="7" />
+        <rect x="3" y="14" width="7" height="7" />
+        <rect x="14" y="14" width="7" height="7" />
+      </svg>Dashboard</a>
+    <a href="/nutrition" class="active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 2l1.5 4.5L12 4l7.5 2.5L21 2" />
+        <path d="M3 2v18l9 2 9-2V2" />
+        <path d="M12 4v18" />
+      </svg>Nutrition</a>
+    <a href="/workout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M6 12v2a6 6 0 0 0 12 0v-2" />
+      </svg>Workout</a>
+    <a href="/profile"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>Profile</a>
+    <a href="/logout" style="color:#f87171"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171"
+        stroke-width="2" stroke-linecap="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+      </svg>Logout</a>
+  </div>
+  <main>
+    <div class="page-header">
+      <div class="eyebrow">Daily Tracking</div>
+      <h1>
+        <svg class="h1-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.5" stroke-linecap="round">
+          <path d="M3 2l1.5 4.5L12 4l7.5 2.5L21 2" />
+          <path d="M3 2v18l9 2 9-2V2" />
+          <path d="M12 4v18" />
+        </svg>
+        <span>Nutrition</span> Tracker
+      </h1>
+      <p>تتبع وجباتك اليومية — سجّل الأكل واتابع الماكروز</p>
+    </div>
+
+    <div class="summary-section">
+      <div class="summary-bar">
+        <div class="sum-card cal">
+          <div class="s-label">Calories</div>
+          <div class="s-value" id="totalCal">0</div>
+          <div class="s-remain" id="remCal">— kcal left</div>
+        </div>
+        <div class="sum-card prot">
+          <div class="s-label">Protein</div>
+          <div class="s-value" id="totalProt">0g</div>
+          <div class="s-remain" id="remProt">—g left</div>
+        </div>
+        <div class="sum-card carb">
+          <div class="s-label">Carbs</div>
+          <div class="s-value" id="totalCarb">0g</div>
+          <div class="s-remain" id="remCarb">—g left</div>
+        </div>
+        <div class="sum-card fat">
+          <div class="s-label">Fat</div>
+          <div class="s-value" id="totalFat">0g</div>
+          <div class="s-remain" id="remFat">—g left</div>
+        </div>
+      </div>
+      <div class="goal-bars">
+        <div class="goal-label">Daily Goals</div>
+        <div class="goal-row"><span class="goal-name">Calories</span>
+          <div class="bar-track">
+            <div class="bar-fill cal" id="bar-cal" style="width:0%"></div>
+          </div><span class="goal-pct" id="pct-cal">0%</span>
+        </div>
+        <div class="goal-row"><span class="goal-name">Protein</span>
+          <div class="bar-track">
+            <div class="bar-fill prot" id="bar-prot" style="width:0%"></div>
+          </div><span class="goal-pct" id="pct-prot">0%</span>
+        </div>
+        <div class="goal-row"><span class="goal-name">Carbs</span>
+          <div class="bar-track">
+            <div class="bar-fill carb" id="bar-carb" style="width:0%"></div>
+          </div><span class="goal-pct" id="pct-carb">0%</span>
+        </div>
+        <div class="goal-row"><span class="goal-name">Fat</span>
+          <div class="bar-track">
+            <div class="bar-fill fat" id="bar-fat" style="width:0%"></div>
+          </div><span class="goal-pct" id="pct-fat">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="meals-grid">
+      <!-- BREAKFAST -->
+      <div class="meal-card breakfast">
+        <div class="meal-header">
+          <div class="meal-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg></div>
+          <div>
+            <div class="meal-title">Breakfast / الفطار</div>
+            <div class="meal-sub" id="breakfastCal">0 kcal logged</div>
+          </div>
+        </div>
+        <div class="search-row">
+          <input type="text" id="breakfastInput" placeholder="Search food...">
+          <input type="number" id="breakfastGrams" placeholder="g" min="1" value="100">
+          <button class="btn-search" onclick="searchFood('breakfast')">Search</button>
+        </div>
+        <div class="result-box" id="breakfastResult"></div>
+        <div class="custom-section" id="breakfastCustomSection">
+          <div class="divider">مش موجود — ضيفها يدوياً</div>
+          <div class="custom-form" style="display:grid;">
+            <input type="text" id="breakfastCustomName" placeholder="اسم الأكلة">
+            <div class="custom-row">
+              <input type="number" id="breakfastCustomCal" placeholder="Calories" min="0">
+              <input type="number" id="breakfastCustomProt" placeholder="Protein g" min="0">
+            </div>
+            <div class="custom-row">
+              <input type="number" id="breakfastCustomCarb" placeholder="Carbs g" min="0">
+              <input type="number" id="breakfastCustomFat" placeholder="Fat g" min="0">
+            </div>
+            <button class="btn-add" onclick="addCustomFood('breakfast')">+ Add</button>
+          </div>
+          <div class="result-box" id="breakfastCustomResult"></div>
+        </div>
+        <div class="food-log" id="breakfastLog"></div>
+      </div>
+
+      <!-- LUNCH -->
+      <div class="meal-card lunch">
+        <div class="meal-header">
+          <div class="meal-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+            </svg></div>
+          <div>
+            <div class="meal-title">Lunch / الغداء</div>
+            <div class="meal-sub" id="lunchCal">0 kcal logged</div>
+          </div>
+        </div>
+        <div class="search-row">
+          <input type="text" id="lunchInput" placeholder="Search food...">
+          <input type="number" id="lunchGrams" placeholder="g" min="1" value="100">
+          <button class="btn-search" onclick="searchFood('lunch')">Search</button>
+        </div>
+        <div class="result-box" id="lunchResult"></div>
+        <div class="custom-section" id="lunchCustomSection">
+          <div class="divider">مش موجود — ضيفها يدوياً</div>
+          <div class="custom-form" style="display:grid;">
+            <input type="text" id="lunchCustomName" placeholder="اسم الأكلة">
+            <div class="custom-row">
+              <input type="number" id="lunchCustomCal" placeholder="Calories" min="0">
+              <input type="number" id="lunchCustomProt" placeholder="Protein g" min="0">
+            </div>
+            <div class="custom-row">
+              <input type="number" id="lunchCustomCarb" placeholder="Carbs g" min="0">
+              <input type="number" id="lunchCustomFat" placeholder="Fat g" min="0">
+            </div>
+            <button class="btn-add" onclick="addCustomFood('lunch')">+ Add</button>
+          </div>
+          <div class="result-box" id="lunchCustomResult"></div>
+        </div>
+        <div class="food-log" id="lunchLog"></div>
+      </div>
+
+      <!-- DINNER -->
+      <div class="meal-card dinner">
+        <div class="meal-header">
+          <div class="meal-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" />
+            </svg></div>
+          <div>
+            <div class="meal-title">Dinner / العشاء</div>
+            <div class="meal-sub" id="dinnerCal">0 kcal logged</div>
+          </div>
+        </div>
+        <div class="search-row">
+          <input type="text" id="dinnerInput" placeholder="Search food...">
+          <input type="number" id="dinnerGrams" placeholder="g" min="1" value="100">
+          <button class="btn-search" onclick="searchFood('dinner')">Search</button>
+        </div>
+        <div class="result-box" id="dinnerResult"></div>
+        <div class="custom-section" id="dinnerCustomSection">
+          <div class="divider">مش موجود — ضيفها يدوياً</div>
+          <div class="custom-form" style="display:grid;">
+            <input type="text" id="dinnerCustomName" placeholder="اسم الأكلة">
+            <div class="custom-row">
+              <input type="number" id="dinnerCustomCal" placeholder="Calories" min="0">
+              <input type="number" id="dinnerCustomProt" placeholder="Protein g" min="0">
+            </div>
+            <div class="custom-row">
+              <input type="number" id="dinnerCustomCarb" placeholder="Carbs g" min="0">
+              <input type="number" id="dinnerCustomFat" placeholder="Fat g" min="0">
+            </div>
+            <button class="btn-add" onclick="addCustomFood('dinner')">+ Add</button>
+          </div>
+          <div class="result-box" id="dinnerCustomResult"></div>
+        </div>
+        <div class="food-log" id="dinnerLog"></div>
+      </div>
+
+      <!-- SNACKS -->
+      <div class="meal-card snacks">
+        <div class="meal-header">
+          <div class="meal-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10" />
+              <path
+                d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32" />
+            </svg></div>
+          <div>
+            <div class="meal-title">Snacks / سناكس</div>
+            <div class="meal-sub" id="snacksCal">0 kcal logged</div>
+          </div>
+        </div>
+        <div class="search-row">
+          <input type="text" id="snacksInput" placeholder="Search food...">
+          <input type="number" id="snacksGrams" placeholder="g" min="1" value="100">
+          <button class="btn-search" onclick="searchFood('snacks')">Search</button>
+        </div>
+        <div class="result-box" id="snacksResult"></div>
+        <div class="custom-section" id="snacksCustomSection">
+          <div class="divider">مش موجود — ضيفها يدوياً</div>
+          <div class="custom-form" style="display:grid;">
+            <input type="text" id="snacksCustomName" placeholder="اسم الأكلة">
+            <div class="custom-row">
+              <input type="number" id="snacksCustomCal" placeholder="Calories" min="0">
+              <input type="number" id="snacksCustomProt" placeholder="Protein g" min="0">
+            </div>
+            <div class="custom-row">
+              <input type="number" id="snacksCustomCarb" placeholder="Carbs g" min="0">
+              <input type="number" id="snacksCustomFat" placeholder="Fat g" min="0">
+            </div>
+            <button class="btn-add" onclick="addCustomFood('snacks')">+ Add</button>
+          </div>
+          <div class="result-box" id="snacksCustomResult"></div>
+        </div>
+        <div class="food-log" id="snacksLog"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <a href="/" class="footer-logo">PulseFit</a>
+    <ul class="footer-links">
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/nutrition">Nutrition</a></li>
+      <li><a href="/workout">Workout</a></li>
+      <li><a href="/profile">Profile</a></li>
+      <li><a href="/history">History</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 PulseFit</span>
+  </footer>
+
+  <script src="/static/common.js"></script>
+  <script>
+    let _goalCal = 0, _goalProt = 0, _goalCarb = 0, _goalFat = 0;
+    fetch('/api/get-plan').then(r => r.json()).then(({ userData: u = {} }) => {
+      if (!u.weight || !u.height || !u.age) return;
+      const gender = u.gender || 'male';
+      let bmr = gender === 'male' ? 10 * u.weight + 6.25 * u.height - 5 * u.age + 5 : 10 * u.weight + 6.25 * u.height - 5 * u.age - 161;
+      const days = parseInt(u.workoutDays) || 3;
+      const act = days <= 2 ? 1.375 : days <= 4 ? 1.55 : days <= 6 ? 1.725 : 1.9;
+      let tdee = Math.round(bmr * act);
+      if (u.goal === 'lose') tdee = Math.round(tdee * .85);
+      if (u.goal === 'build') tdee = Math.round(tdee * 1.1);
+      _goalCal = tdee; _goalProt = Math.round(u.weight * (u.goal === 'build' ? 2 : u.goal === 'lose' ? 1.8 : 1.6));
+      _goalFat = Math.round((tdee * .25) / 9); _goalCarb = Math.round((tdee - _goalProt * 4 - _goalFat * 9) / 4);
+      refreshBars();
+    }).catch(() => { });
+    function refreshBars() {
+      const cal = parseFloat(document.getElementById('totalCal')?.textContent) || 0;
+      const prot = parseFloat(document.getElementById('totalProt')?.textContent) || 0;
+      const carb = parseFloat(document.getElementById('totalCarb')?.textContent) || 0;
+      const fat = parseFloat(document.getElementById('totalFat')?.textContent) || 0;
+      setBar('cal', cal, _goalCal, 'kcal'); setBar('prot', prot, _goalProt, 'g');
+      setBar('carb', carb, _goalCarb, 'g'); setBar('fat', fat, _goalFat, 'g');
+    }
+    function setBar(key, current, goal, unit) {
+      const bar = document.getElementById('bar-' + key), pctEl = document.getElementById('pct-' + key);
+      const k = key.charAt(0).toUpperCase() + key.slice(1);
+      const remEl = document.getElementById('rem' + k);
+      if (!bar) return;
+      const pct = goal > 0 ? Math.min(Math.round(current / goal * 100), 100) : 0;
+      const rem = goal > 0 ? Math.round(goal - current) : 0;
+      bar.style.width = pct + '%';
+      bar.className = 'bar-fill ' + key + (current > goal ? ' over' : '');
+      if (pctEl) pctEl.textContent = pct + '%';
+      if (remEl) {
+        if (goal === 0) { remEl.textContent = ''; return; }
+        if (current > goal) { remEl.textContent = '+' + Math.abs(rem) + unit + ' over'; remEl.classList.add('over'); }
+        else { remEl.textContent = rem + unit + ' left'; remEl.classList.remove('over'); }
+      }
+    }
+    setInterval(refreshBars, 2000);
+    function toggleMobileNav() { document.getElementById('mobile-nav').classList.toggle('open'); }
+  </script>
+  <script src="/static/nutrition.js"></script>
+  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(console.error); }</script>
+</body>
+
+</html>

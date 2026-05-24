@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PulseFit | 404 — Not Found</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap">
+  <style>
+    :root{--navy:#0d1b2a;--navy2:#132236;--accent:#e8f04a;--accent2:#4af0c8;--white:#f0f4f8;--muted:#7a90a8;--card-bg:rgba(255,255,255,0.03);--card-border:rgba(255,255,255,0.07);--radius:14px;--ease:0.2s ease}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;background-image:radial-gradient(ellipse at 20% 20%,rgba(232,240,74,0.06) 0%,transparent 40%),radial-gradient(ellipse at 80% 80%,rgba(74,240,200,0.05) 0%,transparent 40%);text-align:center}
+    .error-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(7rem,22vw,14rem);line-height:1;letter-spacing:8px;color:var(--accent);position:relative;display:inline-block;text-shadow:0 0 40px rgba(232,240,74,0.3);animation:flicker 4s infinite}
+    @keyframes flicker{0%,95%,100%{opacity:1}96%{opacity:.7}97%{opacity:1}98%{opacity:.4}99%{opacity:1}}
+    .error-num::before{content:'404';position:absolute;inset:0;color:var(--accent2);clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%);animation:glitch 3s infinite;opacity:0}
+    @keyframes glitch{0%,90%,100%{transform:translate(0);opacity:0}92%{transform:translate(-3px,2px);opacity:.6}94%{transform:translate(3px,-2px);opacity:.6}96%{transform:translate(0);opacity:0}}
+    .dumbbell-icon{width:72px;height:72px;margin:0 auto .75rem;display:flex;align-items:center;justify-content:center;color:var(--accent);animation:swing 2.5s ease-in-out infinite}
+    @keyframes swing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+    .error-heading{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:3px;margin-bottom:.5rem}
+    .error-sub{color:var(--muted);font-size:.95rem;max-width:38ch;margin:0 auto 2rem;line-height:1.65}
+    .nav-links-grid{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-bottom:2.5rem}
+    .link-btn{padding:.7rem 1.3rem;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all var(--ease);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+    .link-btn.primary{background:var(--accent);color:var(--navy);box-shadow:0 4px 18px rgba(232,240,74,.2)}
+    .link-btn.primary:hover{background:#d4da40;transform:translateY(-1px)}
+    .link-btn.ghost{background:var(--card-bg);color:var(--muted);border:1px solid var(--card-border)}
+    .link-btn.ghost:hover{background:var(--navy2);color:var(--white)}
+    .or-sep{color:var(--muted);font-size:.78rem;margin-bottom:1rem;letter-spacing:1px}
+    .back-link{color:var(--muted);font-size:.82rem;text-decoration:none;transition:color var(--ease);display:inline-flex;align-items:center;gap:5px}
+    .back-link:hover{color:var(--white)}
+    .logo-link{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--accent);text-decoration:none;position:fixed;top:1.5rem;left:2rem;opacity:.7;transition:opacity var(--ease)}
+    .logo-link:hover{opacity:1}
+    @media(max-width:480px){.nav-links-grid{gap:.5rem}.link-btn{padding:.6rem 1rem;font-size:.82rem}}
+  </style>
+</head>
+<body>
+  <a href="/" class="logo-link">PulseFit</a>
+
+  <div class="dumbbell-icon">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <rect x="1" y="10" width="4" height="4" rx="1"/><rect x="19" y="10" width="4" height="4" rx="1"/>
+      <rect x="4" y="8" width="3" height="8" rx="1"/><rect x="17" y="8" width="3" height="8" rx="1"/>
+      <line x1="7" y1="12" x2="17" y2="12"/>
+    </svg>
+  </div>
+
+  <div class="error-num">404</div>
+  <h1 class="error-heading">Page Not Found</h1>
+  <p class="error-sub">Looks like this page skipped leg day — it doesn't exist. Try heading back to somewhere that does.</p>
+
+  <div class="nav-links-grid">
+    <a href="/" class="link-btn primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <a href="/dashboard" class="link-btn ghost">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="/workout" class="link-btn ghost">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="10" width="4" height="4" rx="1"/><rect x="19" y="10" width="4" height="4" rx="1"/><rect x="4" y="8" width="3" height="8" rx="1"/><rect x="17" y="8" width="3" height="8" rx="1"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+      Workout
+    </a>
+    <a href="/nutrition" class="link-btn ghost">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 2l1.5 4.5L12 4l7.5 2.5L21 2"/><path d="M3 2v18l9 2 9-2V2"/></svg>
+      Nutrition
+    </a>
+  </div>
+
+  <div class="or-sep">or</div>
+
+  <a href="javascript:history.back()" class="back-link">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Go back to previous page
+  </a>
+</body>
+</html>

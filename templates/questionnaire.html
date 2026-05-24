@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#e8f04a">
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PulseFit | Questionnaire</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap">
+  <style>
+    :root{--navy:#0d1b2a;--navy2:#132236;--navy3:#1a2f47;--navy4:#0a1520;--accent:#e8f04a;--accent2:#4af0c8;--white:#f0f4f8;--muted:#7a90a8;--muted2:#4a6280;--card-bg:rgba(255,255,255,0.03);--card-border:rgba(255,255,255,0.07);--radius:14px;--radius-sm:10px;--ease:0.2s ease}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2.5rem 1rem 3rem;background-image:radial-gradient(ellipse at 15% 10%,rgba(232,240,74,0.05) 0%,transparent 40%),radial-gradient(ellipse at 85% 90%,rgba(74,240,200,0.04) 0%,transparent 40%)}
+    .top-logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;color:var(--accent);text-decoration:none;margin-bottom:2rem;display:block;text-align:center}
+    .logout-link{position:fixed;top:1.2rem;right:1.5rem;color:#f87171;font-size:.85rem;font-weight:600;text-decoration:none;z-index:999;display:flex;align-items:center;gap:5px}
+    .step-indicator{display:flex;align-items:center;gap:0;margin-bottom:2rem;width:min(520px,100%)}
+    .step{display:flex;align-items:center;gap:8px;flex:1}
+    .step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;flex-shrink:0;border:2px solid var(--muted2);color:var(--muted);transition:all .35s ease}
+    .step.active .step-num{border-color:var(--accent);color:var(--navy);background:var(--accent)}
+    .step.done .step-num{border-color:var(--accent2);color:var(--accent2);background:rgba(74,240,200,.1)}
+    .step-info{display:flex;flex-direction:column}
+    .step-label{font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted2);transition:color .35s}
+    .step.active .step-label{color:var(--accent)}.step.done .step-label{color:var(--accent2)}
+    .step-title{font-size:.82rem;color:var(--muted)}.step.active .step-title{color:var(--white)}
+    .step-connector{flex:0 0 32px;height:2px;background:var(--muted2);margin:0 8px;border-radius:2px;transition:background .35s}
+    .step-connector.done{background:var(--accent2)}
+    .progress-track{width:min(520px,100%);height:3px;border-radius:999px;background:var(--card-border);margin-bottom:1.75rem;overflow:hidden}
+    .progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .5s cubic-bezier(.34,1.56,.64,1);width:0%}
+    .form-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:2.25rem;width:min(520px,100%)}
+    .form-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;margin-bottom:.3rem}
+    .form-title span{color:var(--accent)}
+    .form-sub{color:var(--muted);font-size:.84rem;margin-bottom:0}
+    .step-panel{display:none}.step-panel.active{display:block;animation:fadeSlide .3s ease}
+    @keyframes fadeSlide{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+    .section-label{font-size:.65rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin:1.5rem 0 .85rem;display:flex;align-items:center;gap:10px}
+    .section-label::after{content:'';flex:1;height:1px;background:var(--card-border)}
+    .form-group{margin-bottom:.85rem}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    label{display:block;margin-bottom:5px;font-size:.79rem;font-weight:600;color:var(--white)}
+    input,select{width:100%;background:var(--navy2);border:1px solid var(--card-border);border-radius:9px;padding:10px 13px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color var(--ease),box-shadow var(--ease);appearance:none;-webkit-appearance:none}
+    input::placeholder{color:var(--muted)}
+    input:focus,select:focus{border-color:rgba(232,240,74,.4);box-shadow:0 0 0 3px rgba(232,240,74,.06)}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a90a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;cursor:pointer}
+    select option{background:var(--navy2);color:var(--white)}
+    .btn-row{display:flex;gap:.75rem;margin-top:1.75rem}
+    .btn-back{flex:0 0 auto;padding:.9rem 1.25rem;background:transparent;color:var(--muted);border:1px solid var(--card-border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;transition:all var(--ease);display:flex;align-items:center;gap:6px}
+    .btn-back:hover{background:var(--navy2);color:var(--white)}
+    .btn-next,.btn-submit{flex:1;padding:.9rem;background:var(--accent);color:var(--navy);border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:all var(--ease);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(232,240,74,.18)}
+    .btn-next:hover,.btn-submit:hover{background:#d4da40;transform:translateY(-1px);box-shadow:0 8px 24px rgba(232,240,74,.28)}
+    .btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    #result{margin-top:1.25rem;background:var(--navy2);border:1px solid var(--card-border);border-radius:var(--radius);padding:1.25rem;display:none}
+    #result.show{display:block;animation:fadeSlide .3s ease}
+    .loading{text-align:center;color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px}
+    .loading::after{content:'';display:block;width:40px;height:3px;margin:8px auto 0;background:var(--accent);animation:loadBar 1.2s ease infinite}
+    @keyframes loadBar{0%{width:10px}50%{width:40px}100%{width:10px}}
+    .plan h3{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1.5px;color:var(--accent);margin-bottom:.5rem}
+    .plan p{color:var(--muted);font-size:.84rem;margin-bottom:.75rem;line-height:1.6}
+    .plan h4{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:.5rem}
+    .plan ul{list-style:none;display:grid;gap:5px}
+    .plan li{background:var(--navy3);border:1px solid var(--card-border);border-radius:8px;padding:7px 12px;font-size:.82rem;color:var(--white);display:flex;align-items:center;gap:8px}
+    .plan li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+    .redirect-note{text-align:center;margin-top:.75rem;font-size:.8rem;color:var(--muted)}
+    @media(max-width:600px){
+      body{padding:1.5rem .75rem 2rem}
+      .form-card{padding:1.25rem;border-radius:14px}
+      .form-title{font-size:1.6rem}
+      .form-row{grid-template-columns:1fr}
+      .step-title{display:none}
+      .step-connector{flex:0 0 16px;margin:0 4px}
+      .step-num{width:28px;height:28px;font-size:.75rem}
+      .btn-row{flex-direction:column}
+      .btn-back{width:100%;justify-content:center}
+      .btn-next,.btn-submit{font-size:.88rem}
+      .logout-link{top:.8rem;right:.75rem;font-size:.78rem}
+    }
+    @media(max-width:400px){
+      .step-indicator{gap:0;justify-content:center}
+      .step-info{display:none}
+      .step-connector{flex:0 0 20px}
+      .form-card{padding:1rem}
+      input,select{padding:9px 11px;font-size:.82rem}
+    }
+  </style>
+</head>
+<body>
+  <a href="/" class="top-logo">PulseFit</a>
+  <a href="/logout" class="logout-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Logout
+  </a>
+
+  <!-- STEP INDICATOR -->
+  <div class="step-indicator">
+    <div class="step active" id="si-1">
+      <div class="step-num">1</div>
+      <div class="step-info"><span class="step-label">Step 1</span><span class="step-title">Personal Info</span></div>
+    </div>
+    <div class="step-connector" id="sc-1"></div>
+    <div class="step" id="si-2">
+      <div class="step-num">2</div>
+      <div class="step-info"><span class="step-label">Step 2</span><span class="step-title">Goals & Level</span></div>
+    </div>
+    <div class="step-connector" id="sc-2"></div>
+    <div class="step" id="si-3">
+      <div class="step-num">3</div>
+      <div class="step-info"><span class="step-label">Step 3</span><span class="step-title">Equipment</span></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <h1 class="form-title">Fitness <span>Questionnaire</span></h1>
+    <p class="form-sub" id="step-sub">Tell us about yourself to build your personalised plan</p>
+
+    <form id="fitnessForm" novalidate>
+
+      <!-- STEP 1 -->
+      <div class="step-panel active" id="panel-1">
+        <div class="section-label">Personal Info</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender"><option value="">Select gender</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select>
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="10" max="100" placeholder="e.g. 25">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="weight">Weight (kg)</label>
+            <input type="number" id="weight" name="weight" min="30" max="300" placeholder="e.g. 75">
+          </div>
+          <div class="form-group">
+            <label for="height">Height (cm)</label>
+            <input type="number" id="height" name="height" min="100" max="250" placeholder="e.g. 175">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-next" onclick="goStep(2)">
+            Next — Goals
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-panel" id="panel-2">
+        <div class="section-label">Goals & Level</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="goal">Goal</label>
+            <select id="goal" name="goal"><option value="">Select goal</option><option value="lose">Lose Weight</option><option value="build">Build Muscle</option><option value="maintain">Maintain</option></select>
+          </div>
+          <div class="form-group">
+            <label for="level">Level</label>
+            <select id="level" name="level"><option value="">Select level</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="workoutDays">Workout days / week</label>
+            <input type="number" id="workoutDays" name="workoutDays" min="1" max="7" placeholder="1–7">
+          </div>
+          <div class="form-group">
+            <label for="legDays">Leg days / week</label>
+            <input type="number" id="legDays" name="legDays" min="0" max="7" placeholder="0–7">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-back" onclick="goStep(1)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </button>
+          <button type="button" class="btn-next" onclick="goStep(3)">
+            Next — Equipment
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-panel" id="panel-3">
+        <div class="section-label">Equipment & Preferences</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="equipment">Equipment</label>
+            <select id="equipment" name="equipment"><option value="">Select equipment</option><option value="full_gym">Full Gym</option><option value="dumbbell_only">Dumbbell Only</option><option value="at_home">At Home</option></select>
+          </div>
+          <div class="form-group">
+            <label for="volume">Volume preference</label>
+            <select id="volume" name="volume"><option value="">Select volume</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="injuries">Injuries (optional)</label>
+            <select id="injuries" name="injuries"><option value="">None</option><option value="back">Back</option><option value="knee">Knee</option><option value="shoulder">Shoulder</option><option value="ankle">Ankle</option><option value="wrist">Wrist</option><option value="neck">Neck</option><option value="elbow">Elbow</option><option value="hip">Hip</option><option value="other">Other</option></select>
+          </div>
+          <div class="form-group">
+            <label for="weakMuscles">Weak muscles (optional)</label>
+            <select id="weakMuscles" name="weakMuscles"><option value="">None</option><option value="chest">Chest</option><option value="back">Back</option><option value="legs">Legs</option><option value="arms">Arms</option><option value="shoulders">Shoulders</option><option value="core">Core</option><option value="glutes">Glutes</option><option value="calves">Calves</option><option value="other">Other</option></select>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-back" onclick="goStep(2)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </button>
+          <button type="submit" class="btn-submit" id="submit-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Generate My Plan
+          </button>
+        </div>
+      </div>
+
+    </form>
+    <div id="result"></div>
+  </div>
+
+  <script src="/static/common.js"></script>
+  <script>
+    let currentStep=1;
+    const TOTAL=3;
+    const subTexts=['Tell us about yourself to build your personalised plan','What are your fitness goals and experience level?','What equipment do you have available?'];
+    function goStep(n){
+      if(n>currentStep&&!validateStep(currentStep))return;
+      document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+      document.getElementById('panel-'+n).classList.add('active');
+      for(let i=1;i<=TOTAL;i++){const si=document.getElementById('si-'+i);si.classList.remove('active','done');if(i<n)si.classList.add('done');else if(i===n)si.classList.add('active');}
+      for(let i=1;i<TOTAL;i++){document.getElementById('sc-'+i).classList.toggle('done',i<n);}
+      document.getElementById('progress-fill').style.width=Math.round(((n-1)/(TOTAL-1))*100)+'%';
+      document.getElementById('step-sub').textContent=subTexts[n-1];
+      currentStep=n;
+    }
+    function validateStep(step){
+      const errs=[];
+      if(step===1){
+        const gender=document.getElementById('gender').value;
+        const age=parseInt(document.getElementById('age').value);
+        const weight=parseFloat(document.getElementById('weight').value);
+        const height=parseFloat(document.getElementById('height').value);
+        if(!gender)errs.push('Please select your gender.');
+        if(isNaN(age)||age<10||age>100)errs.push('Age must be 10–100.');
+        if(isNaN(weight)||weight<30||weight>300)errs.push('Weight must be 30–300 kg.');
+        if(isNaN(height)||height<100||height>250)errs.push('Height must be 100–250 cm.');
+      }
+      if(step===2){
+        const goal=document.getElementById('goal').value;
+        const level=document.getElementById('level').value;
+        const days=parseInt(document.getElementById('workoutDays').value);
+        const legs=parseInt(document.getElementById('legDays').value);
+        if(!goal)errs.push('Please select a goal.');
+        if(!level)errs.push('Please select your level.');
+        if(isNaN(days)||days<1||days>7)errs.push('Workout days must be 1–7.');
+        if(isNaN(legs)||legs<0||legs>7)errs.push('Leg days must be 0–7.');
+      }
+      if(errs.length){alert(errs.join('\n'));return false;}
+      return true;
+    }
+    goStep(1);
+  </script>
+  <script src="/static/questionnaire.js"></script>
+  <script>if('serviceWorker'in navigator){navigator.serviceWorker.register('/sw.js').catch(console.error);}</script>
+</body>
+</html>

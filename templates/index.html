@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PulseFit — AI Personal Trainer</title>
+  <meta name="description" content="Your AI-powered personal trainer. Real-time pose detection, smart nutrition tracking, and personalized workout plans.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#e8f04a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap">
+  <style>
+    :root {
+      --bg:       #080d14;
+      --surface:  #0e1620;
+      --surface2: #131e2e;
+      --accent:   #e8f04a;
+      --accent2:  #4af0c8;
+      --white:    #f0f4f8;
+      --muted:    #6b7f99;
+      --border:   rgba(255,255,255,0.07);
+      --radius:   16px;
+      --glow:     rgba(232,240,74,0.18);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--white); font-family: 'DM Sans', sans-serif; line-height: 1.6; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    img, svg { display: block; max-width: 100%; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 2rem;
+      backdrop-filter: blur(20px);
+      background: rgba(8,13,20,0.75);
+      border-bottom: 1px solid var(--border);
+    }
+    nav { max-width: 1100px; margin: 0 auto; height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--white); }
+    .nav-ctas { display: flex; align-items: center; gap: 0.75rem; }
+    .btn-ghost { padding: 0.55rem 1.25rem; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 0.88rem; font-weight: 600; color: var(--white); background: transparent; cursor: pointer; transition: all 0.2s; }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+    .btn-accent { padding: 0.55rem 1.25rem; border: none; border-radius: 10px; font-family: inherit; font-size: 0.88rem; font-weight: 700; color: #0a0f18; background: var(--accent); cursor: pointer; transition: all 0.2s; }
+    .btn-accent:hover { background: #d4da3a; transform: translateY(-1px); box-shadow: 0 6px 20px var(--glow); }
+
+    /* Mobile nav toggle */
+    .nav-toggle { display: none; background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--white); padding: 6px 8px; cursor: pointer; }
+    .mobile-nav { display: none; position: fixed; top: 68px; left: 0; right: 0; background: rgba(8,13,20,0.98); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 1rem 2rem; flex-direction: column; gap: 1rem; z-index: 99; }
+    .mobile-nav a { color: var(--muted); font-size: 0.95rem; font-weight: 500; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+    .mobile-nav a:last-child { border: none; }
+    .mobile-nav.open { display: flex; }
+
+    /* HERO */
+    #hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8rem 1.5rem 5rem; overflow: hidden; }
+    #hero::before { content: ''; position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(232,240,74,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(232,240,74,0.04) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent); animation: gridDrift 20s linear infinite; }
+    @keyframes gridDrift { from { transform: translateY(0); } to { transform: translateY(60px); } }
+    #hero::after { content: ''; position: absolute; top: 10%; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(232,240,74,0.1) 0%, transparent 65%); border-radius: 50%; z-index: 0; pointer-events: none; animation: pulse 4s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.8; } 50% { transform: translateX(-50%) scale(1.1); opacity: 1; } }
+    .hero-content { position: relative; z-index: 1; max-width: 820px; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; border: 1px solid rgba(232,240,74,0.25); border-radius: 999px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em; color: var(--accent); background: rgba(232,240,74,0.06); margin-bottom: 1.5rem; animation: fadeUp 0.6s ease both; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: blink 1.5s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem, 10vw, 7rem); line-height: 0.95; letter-spacing: 2px; color: var(--white); animation: fadeUp 0.6s 0.1s ease both; }
+    .hero-title span { color: var(--accent); }
+    .hero-sub { margin-top: 1.5rem; font-size: clamp(1rem, 2vw, 1.2rem); color: var(--muted); max-width: 52ch; margin-inline: auto; font-weight: 300; animation: fadeUp 0.6s 0.2s ease both; }
+    .hero-actions { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; animation: fadeUp 0.6s 0.3s ease both; }
+    .btn-hero-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 2rem; background: var(--accent); color: #080d14; border: none; border-radius: 12px; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 30px var(--glow); }
+    .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--glow); background: #d4da3a; }
+    .btn-hero-ghost { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 2rem; background: transparent; color: var(--white); border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+    .hero-stats { display: flex; align-items: center; justify-content: center; gap: 2.5rem; flex-wrap: wrap; margin-top: 3.5rem; animation: fadeUp 0.6s 0.4s ease both; }
+    .hero-stat { text-align: center; }
+    .hero-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--accent); letter-spacing: 1px; }
+    .hero-stat-lbl { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .stat-divider { width: 1px; height: 40px; background: var(--border); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SECTIONS */
+    .section-wrap { max-width: 1100px; margin: 0 auto; padding: 5rem 1.5rem; }
+    .section-tag { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.2rem, 5vw, 3.5rem); letter-spacing: 1px; line-height: 1; margin-bottom: 1rem; }
+    .section-sub { color: var(--muted); font-size: 1.05rem; max-width: 50ch; font-weight: 300; margin-bottom: 3rem; }
+
+    /* FEATURES */
+    #features { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .feature-card { background: var(--surface2); padding: 2rem; transition: background 0.25s; position: relative; overflow: hidden; }
+    .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-card:hover { background: #162030; }
+    .feature-icon { width: 48px; height: 48px; background: rgba(232,240,74,0.08); border: 1px solid rgba(232,240,74,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; color: var(--accent); }
+    .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .feature-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+    /* HOW IT WORKS */
+    .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; position: relative; }
+    .steps-grid::before { content: ''; position: absolute; top: 28px; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent); opacity: 0.3; }
+    .step-card { text-align: center; padding: 1.5rem 1rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); transition: transform 0.2s, border-color 0.2s; }
+    .step-card:hover { transform: translateY(-4px); border-color: rgba(232,240,74,0.2); }
+    .step-num { width: 52px; height: 52px; margin: 0 auto 1rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #080d14; }
+    .step-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .step-card p { font-size: 0.82rem; color: var(--muted); }
+
+    /* AI SHOWCASE */
+    #ai-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .ai-visual { position: relative; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; }
+    .ai-screen { width: 100%; height: 100%; background: linear-gradient(135deg, #0a1520, #111e30); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; position: relative; padding: 2rem; }
+    .pose-svg { width: 120px; opacity: 0.9; }
+    .ai-feedback { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 1.2rem; background: rgba(232,240,74,0.08); border: 1px solid rgba(232,240,74,0.2); border-radius: 999px; font-size: 0.82rem; font-weight: 600; color: var(--accent); animation: feedbackPulse 2s ease-in-out infinite; }
+    @keyframes feedbackPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+    .ai-feedback-icon { color: var(--accent2); flex-shrink: 0; }
+    .rep-counter { position: absolute; top: 1rem; right: 1rem; background: rgba(8,13,20,0.9); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.2rem; text-align: center; }
+    .rep-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--accent); line-height: 1; }
+    .rep-lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .ai-corner-badge { position: absolute; bottom: 1rem; left: 1rem; background: rgba(74,240,200,0.1); border: 1px solid rgba(74,240,200,0.25); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.72rem; font-weight: 600; color: var(--accent2); display: flex; align-items: center; gap: 6px; }
+    .ai-text .section-sub { margin-bottom: 2rem; }
+    .ai-bullets { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+    .ai-bullets li { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.95rem; color: var(--muted); }
+    .bullet-icon { width: 22px; height: 22px; flex-shrink: 0; background: rgba(232,240,74,0.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-top: 2px; color: var(--accent); }
+    .ai-bullets strong { color: var(--white); }
+
+    /* NUTRITION */
+    .nutrition-strip { background: linear-gradient(135deg, rgba(74,240,200,0.05), transparent); border: 1px solid rgba(74,240,200,0.1); border-radius: 20px; padding: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+    .macro-bars { display: flex; flex-direction: column; gap: 1rem; }
+    .macro-row { display: flex; flex-direction: column; gap: 0.35rem; }
+    .macro-label { display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600; align-items: center; gap: 6px; }
+    .macro-label-icon { color: var(--accent2); flex-shrink: 0; }
+    .macro-label span:last-child { color: var(--muted); }
+    .macro-bar-bg { height: 8px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+    .macro-bar-fill { height: 100%; border-radius: 999px; transition: width 1s ease; }
+    .macro-bar-fill.prot { background: linear-gradient(90deg, var(--accent), #b8c800); width: 68%; }
+    .macro-bar-fill.carb { background: linear-gradient(90deg, var(--accent2), #00c8a0); width: 45%; }
+    .macro-bar-fill.fat  { background: linear-gradient(90deg, #f87171, #fb923c); width: 28%; }
+    .nutrition-text h3 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 1px; margin-bottom: 0.75rem; }
+    .nutrition-text p { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+
+    /* TESTIMONIALS */
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .testi-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: border-color 0.2s, transform 0.2s; }
+    .testi-card:hover { border-color: rgba(232,240,74,0.15); transform: translateY(-3px); }
+    .testi-stars { display: flex; gap: 2px; margin-bottom: 0.75rem; color: var(--accent); }
+    .testi-text { font-size: 0.92rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.2rem; font-style: italic; }
+    .testi-author { display: flex; align-items: center; gap: 0.75rem; }
+    .testi-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #080d14; flex-shrink: 0; }
+    .testi-name { font-size: 0.88rem; font-weight: 600; }
+    .testi-role { font-size: 0.76rem; color: var(--muted); }
+
+    /* CTA */
+    .cta-banner { background: linear-gradient(135deg, rgba(232,240,74,0.08), rgba(74,240,200,0.05)); border: 1px solid rgba(232,240,74,0.15); border-radius: 24px; padding: 4rem 2rem; text-align: center; position: relative; overflow: hidden; }
+    .cta-banner::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 400px; height: 400px; background: radial-gradient(circle, rgba(232,240,74,0.07), transparent 60%); border-radius: 50%; pointer-events: none; }
+    .cta-banner h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: 2px; margin-bottom: 1rem; position: relative; }
+    .cta-banner p { color: var(--muted); margin-bottom: 2rem; font-size: 1.05rem; font-weight: 300; position: relative; }
+    .cta-actions { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; position: relative; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 2rem 1.5rem; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 3px; color: var(--accent); }
+    .footer-links { display: flex; gap: 1.5rem; list-style: none; flex-wrap: wrap; }
+    .footer-links a { font-size: 0.85rem; color: var(--muted); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+
+    /* Tablet landscape (≤ 900px) */
+    @media (max-width: 900px) {
+      .features-grid     { grid-template-columns: repeat(2, 1fr); }
+      .steps-grid        { grid-template-columns: 1fr 1fr; }
+      .steps-grid::before{ display: none; }
+      .ai-grid           { grid-template-columns: 1fr; }
+      .nutrition-strip   { grid-template-columns: 1fr; gap: 2rem; }
+      .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links         { display: none; }
+      .nav-toggle        { display: flex; align-items: center; gap: 6px; }
+      header             { padding: 0 1rem; }
+      .section-wrap      { padding: 4rem 1.25rem; }
+    }
+
+    /* Tablet portrait / large phone (≤ 650px) */
+    @media (max-width: 650px) {
+      .steps-grid        { grid-template-columns: 1fr; }
+      .hero-stats        { gap: 1.5rem; }
+      .stat-divider      { display: none; }
+      .nav-ctas .btn-ghost { display: none; }
+      .section-wrap      { padding: 3rem 1rem; }
+      .nutrition-strip   { padding: 1.75rem 1.25rem; }
+      .cta-banner        { padding: 3rem 1.25rem; }
+      .feature-card      { padding: 1.5rem; }
+    }
+
+    /* Phone (≤ 480px) */
+    @media (max-width: 480px) {
+      .features-grid     { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .hero-actions      { flex-direction: column; align-items: stretch; }
+      .btn-hero-primary, .btn-hero-ghost { justify-content: center; padding: 0.85rem 1.5rem; font-size: 0.95rem; }
+      #hero              { padding: 6.5rem 1rem 3rem; }
+      .section-wrap      { padding: 2.5rem 0.9rem; }
+      .nutrition-strip   { padding: 1.25rem 1rem; gap: 1.5rem; }
+      .cta-banner        { padding: 2.25rem 1rem; border-radius: 16px; }
+      nav                { gap: 0.75rem; }
+    }
+
+    /* Very small phones (≤ 380px) */
+    @media (max-width: 380px) {
+      .nav-logo          { font-size: 1.35rem; }
+      .hero-title        { font-size: clamp(2.8rem, 9vw, 3.5rem); }
+      .hero-stat-num     { font-size: 1.6rem; }
+      .hero-badge        { font-size: 0.72rem; padding: 0.35rem 0.85rem; }
+      .section-title     { font-size: clamp(1.9rem, 7vw, 2.5rem); }
+      .step-num          { width: 44px; height: 44px; font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header>
+    <nav>
+      <span class="nav-logo">PulseFit</span>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#ai-section">AI Coach</a></li>
+      </ul>
+      <div class="nav-ctas">
+        <a href="/login" class="btn-ghost">Login</a>
+        <a href="/register" class="btn-accent">Get Started</a>
+        <button class="nav-toggle" onclick="toggleMobileNav()" aria-label="Menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="#features" onclick="closeMobileNav()">Features</a>
+    <a href="#how" onclick="closeMobileNav()">How it works</a>
+    <a href="#ai-section" onclick="closeMobileNav()">AI Coach</a>
+    <a href="/login" onclick="closeMobileNav()">Login</a>
+    <a href="/register" onclick="closeMobileNav()" style="color:var(--accent);font-weight:700;">Get Started</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        AI-Powered Fitness · Real-Time Feedback
+      </div>
+      <h1 class="hero-title">Train Smarter.<br><span>Not Harder.</span></h1>
+      <p class="hero-sub">PulseFit uses real-time pose detection to count your reps, correct your form, and build personalized plans — like having a coach in your pocket.</p>
+      <div class="hero-actions">
+        <a href="/register" class="btn-hero-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Start for Free
+        </a>
+        <a href="/login" class="btn-hero-ghost">
+          Already have an account
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">50+</div>
+          <div class="hero-stat-lbl">Exercises tracked</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">AI</div>
+          <div class="hero-stat-lbl">Real-time coaching</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">100%</div>
+          <div class="hero-stat-lbl">Personalized plans</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="section-wrap">
+      <span class="section-tag">What you get</span>
+      <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+      <p class="section-sub">Built for real results — no fluff, just tools that work.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 12v2a6 6 0 0 0 12 0v-2"/><path d="M12 16v4"/><path d="M8 20h8"/></svg>
+          </div>
+          <h3>AI Rep Counter</h3>
+          <p>Real-time pose detection counts your reps automatically and flags bad form before you get hurt.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+          </div>
+          <h3>Smart Workout Plans</h3>
+          <p>Answer 5 questions and get a full weekly plan built around your goal, level, and schedule.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2l1.5 4.5L12 4l7.5 2.5L21 2"/><path d="M3 2v18l9 2 9-2V2"/><path d="M12 4v18"/></svg>
+          </div>
+          <h3>Nutrition Tracker</h3>
+          <p>Log meals with a huge food database. Macros calculated automatically. Daily calorie goals synced to your plan.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3V5a3 3 0 0 0-3-3z"/><path d="M9 14l2 2 4-4"/></svg>
+          </div>
+          <h3>Voice AI Coach</h3>
+          <p>Get real-time audio feedback during your sets — encouragement, corrections, and cues without looking at a screen.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3>Progress History</h3>
+          <p>Every session saved. Track reps, sets, and duration over time to see how far you've come.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/><path d="M9 6h6M9 10h6M9 14h4"/></svg>
+          </div>
+          <h3>Works Offline (PWA)</h3>
+          <p>Install PulseFit on your phone or desktop — works even without internet for core features.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <div class="section-wrap">
+      <span class="section-tag">How it works</span>
+      <h2 class="section-title">Up and running<br>in 4 steps.</h2>
+      <p class="section-sub">No complicated setup. No gym membership required.</p>
+      <div class="steps-grid">
+        <div class="step-card"><div class="step-num">1</div><h3>Create Account</h3><p>Sign up free. Takes 30 seconds.</p></div>
+        <div class="step-card"><div class="step-num">2</div><h3>Fill Questionnaire</h3><p>Goal, level, equipment, schedule — 2 minutes.</p></div>
+        <div class="step-card"><div class="step-num">3</div><h3>Get Your Plan</h3><p>AI builds your full weekly workout plan instantly.</p></div>
+        <div class="step-card"><div class="step-num">4</div><h3>Train with AI</h3><p>Open your camera, pick an exercise, and go.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI SHOWCASE -->
+  <section id="ai-section">
+    <div class="section-wrap">
+      <div class="ai-grid">
+        <div class="ai-visual">
+          <div class="ai-screen">
+            <svg class="pose-svg" viewBox="0 0 120 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="60" cy="20" r="12" stroke="#e8f04a" stroke-width="2.5"/>
+              <line x1="60" y1="32" x2="60" y2="100" stroke="#e8f04a" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="20" y1="50" x2="100" y2="50" stroke="#e8f04a" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="20" y1="50" x2="10" y2="90" stroke="#4af0c8" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="10" y1="90" x2="25" y2="65" stroke="#4af0c8" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="100" y1="50" x2="110" y2="90" stroke="#4af0c8" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="110" y1="90" x2="95" y2="65" stroke="#4af0c8" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="40" y1="100" x2="80" y2="100" stroke="#e8f04a" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="40" y1="100" x2="35" y2="155" stroke="#e8f04a" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="35" y1="155" x2="30" y2="195" stroke="#e8f04a" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="80" y1="100" x2="85" y2="155" stroke="#e8f04a" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="85" y1="155" x2="90" y2="195" stroke="#e8f04a" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="20" cy="50" r="4" fill="#4af0c8"/>
+              <circle cx="100" cy="50" r="4" fill="#4af0c8"/>
+              <circle cx="10" cy="90" r="4" fill="#4af0c8"/>
+              <circle cx="110" cy="90" r="4" fill="#4af0c8"/>
+              <circle cx="40" cy="100" r="4" fill="#e8f04a"/>
+              <circle cx="80" cy="100" r="4" fill="#e8f04a"/>
+              <circle cx="35" cy="155" r="4" fill="#e8f04a"/>
+              <circle cx="85" cy="155" r="4" fill="#e8f04a"/>
+            </svg>
+            <div class="ai-feedback">
+              <svg class="ai-feedback-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Great form — keep going!
+            </div>
+            <div class="rep-counter"><div class="rep-num">12</div><div class="rep-lbl">Reps</div></div>
+            <div class="ai-corner-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3V5a3 3 0 0 0-3-3z"/></svg>
+              AI Coach Active
+            </div>
+          </div>
+        </div>
+        <div class="ai-text">
+          <span class="section-tag">AI Coach</span>
+          <h2 class="section-title">Your camera<br>becomes your<br>personal trainer.</h2>
+          <p class="section-sub">PulseFit's AI watches your movements in real time using YOLOv8 pose estimation.</p>
+          <ul class="ai-bullets">
+            <li>
+              <div class="bullet-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+              <span><strong>Automatic rep counting</strong> — no need to manually track anything.</span>
+            </li>
+            <li>
+              <div class="bullet-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+              <span><strong>Form correction</strong> — get warned before bad reps become bad habits.</span>
+            </li>
+            <li>
+              <div class="bullet-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3V5a3 3 0 0 0-3-3z"/></svg></div>
+              <span><strong>Voice feedback</strong> — audio cues so you never need to look at the screen.</span>
+            </li>
+            <li>
+              <div class="bullet-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></div>
+              <span><strong>Session saved automatically</strong> — all reps and sets logged to your history.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NUTRITION -->
+  <section id="nutrition">
+    <div class="section-wrap">
+      <span class="section-tag">Nutrition</span>
+      <h2 class="section-title">Fuel your<br>progress.</h2>
+      <p class="section-sub">Track macros, log custom foods, and hit your daily targets — all synced to your fitness goal.</p>
+      <div class="nutrition-strip">
+        <div class="macro-bars">
+          <div style="font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">Today's Macros</div>
+          <div class="macro-row">
+            <div class="macro-label">
+              <span style="display:flex;align-items:center;gap:6px;">
+                <svg class="macro-label-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                Protein
+              </span>
+              <span>148g / 180g</span>
+            </div>
+            <div class="macro-bar-bg"><div class="macro-bar-fill prot"></div></div>
+          </div>
+          <div class="macro-row">
+            <div class="macro-label">
+              <span style="display:flex;align-items:center;gap:6px;">
+                <svg class="macro-label-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 2l1.5 4.5L12 4l7.5 2.5L21 2"/><path d="M3 2v18l9 2 9-2V2"/><path d="M12 4v18"/></svg>
+                Carbs
+              </span>
+              <span>210g / 260g</span>
+            </div>
+            <div class="macro-bar-bg"><div class="macro-bar-fill carb"></div></div>
+          </div>
+          <div class="macro-row">
+            <div class="macro-label">
+              <span style="display:flex;align-items:center;gap:6px;">
+                <svg class="macro-label-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                Fat
+              </span>
+              <span>55g / 70g</span>
+            </div>
+            <div class="macro-bar-bg"><div class="macro-bar-fill fat"></div></div>
+          </div>
+          <div style="margin-top:1rem;padding:1rem;background:rgba(232,240,74,0.05);border:1px solid rgba(232,240,74,0.1);border-radius:12px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:0.82rem;color:var(--muted);display:flex;align-items:center;gap:6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v4l3 3"/></svg>
+              Total Calories
+            </span>
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);letter-spacing:1px;">1,840 / 2,400</span>
+          </div>
+        </div>
+        <div class="nutrition-text">
+          <h3>Smart calorie goals based on your body & plan</h3>
+          <p>PulseFit calculates your TDEE using the Mifflin-St Jeor formula and adjusts macros based on your goal — cut, gain, or maintain.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="reviews">
+    <div class="section-wrap">
+      <span class="section-tag">Reviews</span>
+      <h2 class="section-title">People actually<br>love it.</h2>
+      <div class="testimonials-grid">
+        <div class="testi-card">
+          <div class="testi-stars">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <p class="testi-text">"The AI rep counter is insane. I used to lose count every single set. Now I just focus on lifting."</p>
+          <div class="testi-author"><div class="testi-avatar">A</div><div><div class="testi-name">Ahmed K.</div><div class="testi-role">Intermediate lifter · 8 months</div></div></div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <p class="testi-text">"Got my plan in 2 minutes. It actually fits my schedule and I don't need a gym membership."</p>
+          <div class="testi-author"><div class="testi-avatar">S</div><div><div class="testi-name">Sara M.</div><div class="testi-role">Beginner · Home workouts</div></div></div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <p class="testi-text">"The nutrition tracker is the first one I've actually stuck with. Simple, fast, and it knows Arabic food."</p>
+          <div class="testi-author"><div class="testi-avatar">M</div><div><div class="testi-name">Mohamed R.</div><div class="testi-role">Cutting phase · 3 months</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="section-wrap">
+      <div class="cta-banner">
+        <h2>Ready to train smarter?</h2>
+        <p>Free to use. No credit card. Set up in under 3 minutes.</p>
+        <div class="cta-actions">
+          <a href="/register" class="btn-hero-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Create Free Account
+          </a>
+          <a href="/login" class="btn-hero-ghost">
+            Login
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-logo">PulseFit</span>
+      <ul class="footer-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#ai-section">AI Coach</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Sign up</a></li>
+      </ul>
+      <span class="footer-copy">© 2026 PulseFit. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script src="/static/common.js"></script>
+  <script src="/static/script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(console.error);
+    }
+    function toggleMobileNav() {
+      document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    function closeMobileNav() {
+      document.getElementById('mobile-nav').classList.remove('open');
+    }
+  </script>
+</body>
+</html>

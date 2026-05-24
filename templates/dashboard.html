@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#e8f04a">
+
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PulseFit | Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap">
+  <style>
+    :root {
+      --navy: #0d1b2a;
+      --navy2: #132236;
+      --navy3: #1a2f47;
+      --navy4: #0a1520;
+      --accent: #e8f04a;
+      --accent2: #4af0c8;
+      --red: #e53e3e;
+      --white: #f0f4f8;
+      --muted: #7a90a8;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.07);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --ease: 0.2s ease;
+      --c-cal: #f97316;
+      --c-prot: #34d399;
+      --c-carb: #60a5fa;
+      --c-fat: #facc15;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image:
+        radial-gradient(ellipse at 10% 0%, rgba(232, 240, 74, 0.04) 0%, transparent 45%),
+        radial-gradient(ellipse at 90% 100%, rgba(74, 240, 200, 0.03) 0%, transparent 45%);
+    }
+
+    /* ── NAV ─────────────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 21, 32, 0.95);
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(16px) saturate(140%);
+    }
+
+    nav {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.55rem;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity var(--ease);
+    }
+
+    .logo:hover {
+      opacity: 0.85;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      margin-left: auto;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: color var(--ease);
+      padding-bottom: 2px;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-links a:hover {
+      color: var(--white);
+    }
+
+    .nav-links a.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── MAIN ────────────────────────────────────── */
+    main {
+      flex: 1;
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ── WELCOME BANNER ──────────────────────────── */
+    .welcome-banner {
+      background: linear-gradient(135deg, rgba(232, 240, 74, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+      border: 1px solid rgba(232, 240, 74, 0.12);
+      border-radius: 20px;
+      padding: 1.75rem 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .welcome-banner h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      letter-spacing: 3px;
+    }
+
+    .welcome-banner h1 span {
+      color: var(--accent);
+    }
+
+    .welcome-banner p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 5px;
+    }
+
+    .welcome-icon {
+      font-size: 3rem;
+      flex-shrink: 0;
+    }
+
+    /* ── STATS ROW ───────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      text-align: center;
+      transition: border-color var(--ease), transform var(--ease);
+    }
+
+    .stat-card:hover {
+      border-color: rgba(232, 240, 74, 0.18);
+      transform: translateY(-2px);
+    }
+
+    .stat-card.bmi-normal {
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .stat-card.bmi-over {
+      border-color: rgba(249, 115, 22, 0.25);
+    }
+
+    .stat-card.bmi-under {
+      border-color: rgba(96, 165, 250, 0.25);
+    }
+
+    .stat-card.bmi-obese {
+      border-color: rgba(229, 62, 62, 0.25);
+    }
+
+    .s-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .s-key {
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .s-badge {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .bmi-normal .s-badge {
+      background: rgba(52, 211, 153, 0.12);
+      color: #34d399;
+    }
+
+    .bmi-over .s-badge {
+      background: rgba(249, 115, 22, 0.12);
+      color: #f97316;
+    }
+
+    .bmi-under .s-badge {
+      background: rgba(96, 165, 250, 0.12);
+      color: #60a5fa;
+    }
+
+    .bmi-obese .s-badge {
+      background: rgba(229, 62, 62, 0.12);
+      color: var(--red);
+    }
+
+    /* ── CALORIE GOAL CARD ───────────────────────── */
+    .calorie-banner {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.06) 0%, rgba(13, 27, 42, 0.5) 60%);
+      border: 1px solid rgba(249, 115, 22, 0.25);
+      border-left: 4px solid var(--c-cal);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1.5rem;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 32px rgba(249, 115, 22, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .calorie-banner::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cal-left {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cal-eyebrow {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--c-cal);
+      opacity: 0.8;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cal-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 2px;
+      background: var(--c-cal);
+      border-radius: 2px;
+    }
+
+    .cal-main-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.8rem;
+      line-height: 1;
+      background: linear-gradient(135deg, #ff9a3c 0%, var(--c-cal) 60%, #e55a00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 12px rgba(249, 115, 22, 0.4));
+      letter-spacing: 1px;
+    }
+
+    .cal-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cal-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.3), transparent);
+    }
+
+    .cal-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.35), rgba(255, 255, 255, 0.04), transparent);
+      margin: 0.85rem 0 0.7rem;
+    }
+
+    .macro-bars {
+      display: grid;
+      gap: 10px;
+      min-width: 220px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .macro-bars-header {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted2);
+      margin-bottom: 2px;
+    }
+
+    .macro-row {
+      display: grid;
+      grid-template-columns: 58px 1fr 75px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .macro-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .macro-name.prot {
+      color: var(--c-prot);
+    }
+
+    .macro-name.carb {
+      color: var(--c-carb);
+    }
+
+    .macro-name.fat {
+      color: var(--c-fat);
+    }
+
+    .bar-track {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .bar-fill.prot {
+      background: linear-gradient(90deg, #1fad7a, var(--c-prot), #6effd0);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.55);
+    }
+
+    .bar-fill.carb {
+      background: linear-gradient(90deg, #2563eb, var(--c-carb), #93c5fd);
+      box-shadow: 0 0 8px rgba(96, 165, 250, 0.55);
+    }
+
+    .bar-fill.fat {
+      background: linear-gradient(90deg, #ca8a04, var(--c-fat), #fde68a);
+      box-shadow: 0 0 8px rgba(250, 204, 21, 0.55);
+    }
+
+    .macro-grams {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--white);
+      text-align: right;
+    }
+
+    /* ── DASH GRID ───────────────────────────────── */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+    }
+
+    /* ── CARD ────────────────────────────────────── */
+    .dash-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: border-color var(--ease);
+    }
+
+    .dash-card:hover {
+      border-color: rgba(232, 240, 74, 0.15);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.2rem;
+    }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      background: rgba(232, 240, 74, 0.06);
+      border: 1px solid rgba(232, 240, 74, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .card-icon.teal {
+      background: rgba(74, 240, 200, 0.06);
+      border-color: rgba(74, 240, 200, 0.12);
+    }
+
+    .card-icon.blue {
+      background: rgba(96, 165, 250, 0.06);
+      border-color: rgba(96, 165, 250, 0.12);
+    }
+
+    .card-icon.orange {
+      background: rgba(249, 115, 22, 0.06);
+      border-color: rgba(249, 115, 22, 0.12);
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.25rem;
+      letter-spacing: 1.5px;
+    }
+
+    .card-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* INFO LIST */
+    .info-list {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 1.2rem;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--navy4);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+
+    .info-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .info-val {
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    /* SCHEDULE */
+    .schedule-list {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 1.2rem;
+    }
+
+    .schedule-item {
+      background: var(--navy4);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .schedule-item::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* BUTTONS */
+    .btn-primary {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--accent);
+      color: var(--navy);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all var(--ease);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(232, 240, 74, 0.18);
+    }
+
+    .btn-primary:hover {
+      background: #d4da40;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(232, 240, 74, 0.28);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 0.85rem;
+      background: transparent;
+      color: var(--accent2);
+      border: 1.5px solid rgba(74, 240, 200, 0.35);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all var(--ease);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(74, 240, 200, 0.07);
+      border-color: var(--accent2);
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 1.25rem;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      transition: color var(--ease);
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+    }
+
+    .footer-copy {
+      color: var(--muted2);
+      font-size: 0.78rem;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    .nav-toggle {
+      display: none;
+      margin-left: auto;
+      background: none;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--white);
+      padding: 6px 8px;
+      cursor: pointer;
+      align-items: center;
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: rgba(10, 21, 32, 0.98);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 1.5rem;
+      flex-direction: column;
+      z-index: 99;
+    }
+
+    .mobile-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .95rem;
+      font-weight: 500;
+      padding: .75rem 0;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mobile-nav a:last-child {
+      border: none;
+    }
+
+    .mobile-nav a.active,
+    .mobile-nav a:hover {
+      color: var(--white);
+    }
+
+    .mobile-nav.open {
+      display: flex;
+    }
+
+    /* Tablet (≤ 900px) */
+    @media (max-width: 900px) {
+      .stats-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .dash-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .calorie-banner {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+    }
+
+    /* Large phone (≤ 600px) */
+    @media (max-width: 600px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .welcome-icon {
+        display: none;
+      }
+
+      .welcome-banner {
+        padding: 1.2rem 1rem;
+        border-radius: 14px;
+      }
+
+      .welcome-banner h1 {
+        font-size: clamp(1.5rem, 4vw, 2rem);
+      }
+
+      nav {
+        padding: 0 .75rem;
+      }
+
+      main {
+        padding: 1.25rem .75rem 2rem;
+      }
+
+      .dash-card {
+        padding: 1.1rem;
+      }
+
+      .card-header {
+        margin-bottom: .9rem;
+      }
+
+      .cal-main-val {
+        font-size: 2.5rem;
+      }
+
+      .info-row {
+        padding: 6px 10px;
+      }
+
+      .schedule-item {
+        padding: 6px 10px;
+        font-size: .78rem;
+      }
+
+      footer {
+        padding: 1rem .75rem;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .footer-links {
+        justify-content: center;
+      }
+    }
+
+    /* Small phone (≤ 480px) */
+    @media (max-width: 480px) {
+      .calorie-banner {
+        padding: 1.1rem;
+        gap: 1rem;
+      }
+
+      .cal-main-val {
+        font-size: 2.2rem;
+      }
+
+      .cal-label {
+        font-size: 0.75rem;
+      }
+
+      .macro-row {
+        grid-template-columns: 48px 1fr 70px;
+        gap: 6px;
+      }
+
+      .macro-name {
+        font-size: 0.67rem;
+      }
+
+      .macro-grams {
+        font-size: 0.67rem;
+      }
+
+      .macro-bars {
+        min-width: 0;
+      }
+
+      .card-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+
+      .card-title {
+        font-size: 1.1rem;
+      }
+
+      .btn-primary {
+        font-size: 0.85rem;
+        padding: 0.75rem;
+      }
+
+      .btn-secondary {
+        font-size: 0.85rem;
+        padding: 0.75rem 0.6rem;
+      }
+    }
+
+    /* Very small phone (≤ 380px) */
+    @media (max-width: 380px) {
+      .stats-row {
+        grid-template-columns: 1fr 1fr;
+        gap: .55rem;
+      }
+
+      .s-val {
+        font-size: 1.5rem;
+      }
+
+      .s-key {
+        font-size: .56rem;
+        letter-spacing: 1.5px;
+      }
+
+      .macro-row {
+        grid-template-columns: 44px 1fr 65px;
+        gap: 5px;
+      }
+
+      main {
+        padding: 1rem 0.6rem 2rem;
+      }
+
+      .welcome-banner {
+        padding: 1rem 0.75rem;
+      }
+
+      .welcome-banner h1 {
+        font-size: 1.35rem;
+      }
+
+      .dash-card {
+        padding: 0.9rem;
+      }
+    }
+
+    /* ── MONTHLY CHECK-IN MODAL ── */
+    .meso-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 13, 23, 0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .meso-modal-backdrop[hidden] {
+      display: none;
+    }
+
+    .meso-modal-box {
+      background: linear-gradient(160deg, var(--navy2), var(--navy));
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: min(420px, 92vw);
+      text-align: left;
+      box-shadow: 0 40px 80px rgba(232, 240, 74, 0.1);
+      animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .meso-modal-box h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .meso-modal-box p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .meso-form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .meso-form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .meso-input {
+      width: 100%;
+      padding: 0.85rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    .meso-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .btn-meso-submit {
+      width: 100%;
+      padding: 1rem;
+      background: var(--accent);
+      color: var(--navy);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all var(--ease);
+      margin-top: 1rem;
+    }
+
+    .btn-meso-submit:hover {
+      background: #d4da40;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(232, 240, 74, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <nav>
+      <a href="/" class="logo">PulseFit</a>
+      <ul class="nav-links">
+        <li><a href="/dashboard" class="active">Dashboard</a></li>
+        <li><a href="/nutrition">Nutrition</a></li>
+        <li><a href="/workout">Workout</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/logout" style="color:#f87171">Logout</a></li>
+      </ul>
+      <button class="nav-toggle" onclick="document.getElementById('mobile-nav').classList.toggle('open')"
+        aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="/dashboard" class="active">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round">
+        <rect x="3" y="3" width="7" height="7" />
+        <rect x="14" y="3" width="7" height="7" />
+        <rect x="3" y="14" width="7" height="7" />
+        <rect x="14" y="14" width="7" height="7" />
+      </svg>
+      Dashboard
+    </a>
+    <a href="/nutrition">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round">
+        <path d="M3 2l1.5 4.5L12 4l7.5 2.5L21 2" />
+        <path d="M3 2v18l9 2 9-2V2" />
+        <path d="M12 4v18" />
+      </svg>
+      Nutrition
+    </a>
+    <a href="/workout">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round">
+        <rect x="1" y="10" width="4" height="4" rx="1" />
+        <rect x="19" y="10" width="4" height="4" rx="1" />
+        <rect x="4" y="8" width="3" height="8" rx="1" />
+        <rect x="17" y="8" width="3" height="8" rx="1" />
+        <line x1="7" y1="12" x2="17" y2="12" />
+      </svg>
+      Workout
+    </a>
+    <a href="/profile">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      Profile
+    </a>
+    <a href="/logout" style="color:#f87171">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"
+        stroke-linecap="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+      </svg>
+      Logout
+    </a>
+  </div>
+
+  <main>
+
+    <!-- WELCOME -->
+    <div class="welcome-banner">
+      <div>
+        <h1>Welcome <span>Back</span></h1>
+        <p id="welcome-sub">Here's your fitness overview for today</p>
+      </div>
+      <div class="welcome-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round">
+          <rect x="1" y="10" width="4" height="4" rx="1" />
+          <rect x="19" y="10" width="4" height="4" rx="1" />
+          <rect x="4" y="8" width="3" height="8" rx="1" />
+          <rect x="17" y="8" width="3" height="8" rx="1" />
+          <line x1="7" y1="12" x2="17" y2="12" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="s-val" id="stat-streak">0</div>
+        <div class="s-key">Day Streak 🔥</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-val" id="stat-weight">—</div>
+        <div class="s-key">Weight (kg)</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-val" id="stat-height">—</div>
+        <div class="s-key">Height (cm)</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-val" id="stat-days">—</div>
+        <div class="s-key">Workout Days</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-val" id="stat-level">—</div>
+        <div class="s-key">Level</div>
+      </div>
+      <!-- BMI card — class set dynamically by JS -->
+      <div class="stat-card" id="bmi-card">
+        <div class="s-val" id="stat-bmi">—</div>
+        <div class="s-key">BMI</div>
+        <span class="s-badge" id="bmi-badge"></span>
+      </div>
+    </div>
+
+    <!-- CALORIE GOAL BANNER -->
+    <div class="calorie-banner">
+      <div class="cal-left">
+        <div class="cal-eyebrow">Daily Target</div>
+        <div class="cal-main-val" id="cal-goal">—</div>
+        <div class="cal-label">Daily Calorie Goal (kcal)</div>
+        <div class="cal-divider"></div>
+        <div style="font-size:0.72rem; color:var(--muted2); display:flex; align-items:center; gap:6px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+          Fueling your performance
+        </div>
+      </div>
+      <div class="macro-bars" id="macro-bars">
+        <div class="macro-bars-header">Macros Breakdown</div>
+        <div class="macro-row">
+          <span class="macro-name prot">Protein</span>
+          <div class="bar-track">
+            <div class="bar-fill prot" id="bar-prot" style="width:0%"></div>
+          </div>
+          <span class="macro-grams" id="grams-prot">—g</span>
+        </div>
+        <div class="macro-row">
+          <span class="macro-name carb">Carbs</span>
+          <div class="bar-track">
+            <div class="bar-fill carb" id="bar-carb" style="width:0%"></div>
+          </div>
+          <span class="macro-grams" id="grams-carb">—g</span>
+        </div>
+        <div class="macro-row">
+          <span class="macro-name fat">Fat</span>
+          <div class="bar-track">
+            <div class="bar-fill fat" id="bar-fat" style="width:0%"></div>
+          </div>
+          <span class="macro-grams" id="grams-fat">—g</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASH GRID -->
+    <div class="dash-grid">
+
+      <!-- YOUR INFO -->
+      <div class="dash-card">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Your Info</div>
+            <div class="card-sub">Personal fitness profile</div>
+          </div>
+        </div>
+        <div class="info-list" id="userInfo">
+          <div class="empty-state">Loading your data…</div>
+        </div>
+        <button class="btn-secondary" onclick="window.location.href='/profile'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          View Full Profile
+        </button>
+      </div>
+
+      <!-- WORKOUT PLAN -->
+      <div class="dash-card">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M8 2v4M16 2v4M3 10h18" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Workout Plan</div>
+            <div class="card-sub">Your weekly schedule</div>
+          </div>
+        </div>
+        <div class="schedule-list" id="plan">
+          <div class="empty-state">Loading your plan…</div>
+        </div>
+        <button class="btn-primary" onclick="window.location.href='/workout'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          Start Workout
+        </button>
+      </div>
+
+      <!-- NUTRITION -->
+      <div class="dash-card">
+        <div class="card-header">
+          <div class="card-icon teal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round">
+              <path d="M3 2l1.5 4.5L12 4l7.5 2.5L21 2" />
+              <path d="M3 2v18l9 2 9-2V2" />
+              <path d="M12 4v18" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Nutrition</div>
+            <div class="card-sub">Track your daily food</div>
+          </div>
+        </div>
+        <p style="color:var(--muted); font-size:0.87rem; margin-bottom:1.2rem; line-height:1.65">
+          Log your meals and track calories, protein, carbs, and fat to hit your daily goals.
+        </p>
+        <button class="btn-secondary" onclick="window.location.href='/nutrition'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11l19-9-9 19-2-8-8-2z" />
+          </svg>
+          Go to Nutrition
+        </button>
+      </div>
+
+      <!-- ACTIVITY LOG -->
+      <div class="dash-card">
+        <div class="card-header">
+          <div class="card-icon orange">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Activity Log</div>
+            <div class="card-sub">Your recent and upcoming sessions</div>
+          </div>
+        </div>
+        <div class="schedule-list">
+          <div class="info-row" style="margin-bottom:8px">
+            <span class="info-label">Next Workout</span>
+            <span class="info-val" id="next-workout" style="color:var(--accent)">—</span>
+          </div>
+          <div style="background:var(--navy4); border:1px solid var(--card-border); border-radius:8px; padding:12px;">
+            <div style="font-size:0.78rem; color:var(--muted); margin-bottom:6px">Last Session</div>
+            <div id="last-session-date"
+              style="font-size:0.85rem; font-weight:600; color:var(--white); margin-bottom:4px">—</div>
+            <div id="last-session-exercises" style="font-size:0.75rem; color:var(--muted2); line-height:1.4">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WATER TRACKER -->
+      <div class="dash-card">
+        <div class="card-header">
+          <div class="card-icon"
+            style="background: rgba(96,165,250,0.06); border-color: rgba(96,165,250,0.12); color: #60a5fa;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Water Tracker</div>
+            <div class="card-sub">Daily Hydration Goal: 3000ml</div>
+          </div>
+        </div>
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <div style="font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: #60a5fa; line-height: 1;"
+            id="water-amount">0<span style="font-size:1.2rem; color:var(--muted); margin-left: 4px;">ml</span></div>
+          <div
+            style="width: 100%; background: var(--card-border); height: 8px; border-radius: 4px; margin-top: 10px; overflow: hidden;">
+            <div id="water-bar" style="width: 0%; height: 100%; background: #60a5fa; transition: width 0.3s;"></div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-secondary" style="flex:1" onclick="addWater(250)">+250ml</button>
+          <button class="btn-secondary" style="flex:1" onclick="addWater(500)">+500ml</button>
+        </div>
+      </div>
+
+      <!-- WEIGHT PROGRESS -->
+      <div class="dash-card">
+        <div class="card-header">
+          <div class="card-icon"
+            style="background: rgba(167,139,250,0.06); border-color: rgba(167,139,250,0.12); color: #a78bfa;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
+              <path d="M3 3v18h18" />
+              <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Weight Log</div>
+            <div class="card-sub">Track your progress</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
+          <input type="number" id="new-weight" class="meso-input" placeholder="e.g. 75.5"
+            style="flex:1; padding:0.6rem; font-size:0.9rem;" step="0.1">
+          <button class="btn-primary" style="width: auto; padding: 0.6rem 1rem;" onclick="logWeight()">Log</button>
+        </div>
+        <div style="height: 160px; position: relative;">
+          <canvas id="weightChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+    <div class="meso-modal-backdrop" id="meso-modal" hidden>
+      <div class="meso-modal-box">
+        <h2>Phase Complete! 🏆</h2>
+        <p>You've completed 4 weeks! Let's update your stats to build your next training block (Mesocycle).</p>
+
+        <div class="meso-form-group">
+          <label>Current Weight (kg)</label>
+          <input type="number" id="meso-weight" class="meso-input" placeholder="e.g. 75" min="30" max="250">
+        </div>
+
+        <div class="meso-form-group">
+          <label>Goal for next month</label>
+          <select id="meso-goal" class="meso-input">
+            <option value="build">Build Muscle (Gain)</option>
+            <option value="lose">Fat Loss (Cut)</option>
+            <option value="strength">Strength</option>
+            <option value="maintain">Maintain</option>
+          </select>
+        </div>
+
+        <div class="meso-form-group">
+          <label>Any exercises you hated? (We'll replace them)</label>
+          <select id="meso-disliked" class="meso-input" multiple style="height: 100px;">
+          </select>
+          <small style="color:var(--muted); font-size:0.7rem; margin-top:4px; display:block;">Hold Ctrl (Windows) or Cmd
+            (Mac) to select multiple.</small>
+        </div>
+
+        <button class="btn-meso-submit" onclick="submitMonthlyCheckin()">Generate New Phase Plan</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="/" class="footer-logo">PulseFit</a>
+    <ul class="footer-links">
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/nutrition">Nutrition</a></li>
+      <li><a href="/workout">Workout</a></li>
+      <li><a href="/profile">Profile</a></li>
+      <li><a href="/history">History</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 PulseFit</span>
+  </footer>
+
+  <script src="/static/common.js"></script>
+  <script src="/static/dashboard.js"></script>
+
+  <!-- PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(console.error);
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    let weightChartInstance = null;
+
+    async function loadWater() {
+      try {
+        const res = await fetch('/api/water');
+        const data = await res.json();
+        const amount = data.amount_ml || 0;
+        document.getElementById('water-amount').innerHTML = `${amount}<span style="font-size:1.2rem; color:var(--muted); margin-left: 4px;">ml</span>`;
+        const pct = Math.min((amount / 3000) * 100, 100);
+        document.getElementById('water-bar').style.width = `${pct}%`;
+      } catch (e) { console.warn(e); }
+    }
+
+    async function addWater(amt) {
+      try {
+        await fetch('/api/water', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount_ml: amt })
+        });
+        loadWater();
+      } catch (e) { console.warn(e); }
+    }
+
+    async function loadWeight() {
+      try {
+        const res = await fetch('/api/weight');
+        const data = await res.json();
+        const history = data.history || [];
+
+        if (history.length > 0) {
+          const latestWeight = history[history.length - 1].weight_kg;
+          document.getElementById('stat-weight').innerText = latestWeight;
+          if (currentUserData) {
+            currentUserData.weight = latestWeight;
+            // update bmi
+            if (currentUserData.height) {
+              const h = parseFloat(currentUserData.height) / 100;
+              const bmi = (latestWeight / (h * h)).toFixed(1);
+              document.getElementById('stat-bmi').innerText = bmi;
+            }
+          }
+        }
+
+        const labels = history.map(h => h.date.substring(5)); // MM-DD
+        const points = history.map(h => h.weight_kg);
+
+        const ctx = document.getElementById('weightChart').getContext('2d');
+        if (weightChartInstance) weightChartInstance.destroy();
+
+        weightChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Weight (kg)',
+              data: points,
+              borderColor: '#a78bfa',
+              backgroundColor: 'rgba(167, 139, 250, 0.1)',
+              borderWidth: 2,
+              pointBackgroundColor: '#a78bfa',
+              fill: true,
+              tension: 0.3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#7a90a8', font: { size: 10 } } },
+              y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#7a90a8', font: { size: 10 } } }
+            }
+          }
+        });
+      } catch (e) { console.warn(e); }
+    }
+
+    async function logWeight() {
+      const w = document.getElementById('new-weight').value;
+      if (!w) return;
+      try {
+        await fetch('/api/weight', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ weight_kg: parseFloat(w) })
+        });
+        document.getElementById('new-weight').value = '';
+        loadWeight();
+      } catch (e) { console.warn(e); }
+    }
+  </script>
+  <script>
+    let currentUserData = {};
+
+    async function checkProgress() {
+      try {
+        const res = await fetch('/api/get-plan');
+        if (!res.ok) return;
+        const data = await res.json();
+        const plan = data.plan;
+        currentUserData = data.userData || {};
+
+        if (!plan || !plan.ai_days) return;
+
+        const totalDays = plan.ai_days.length;
+        const completedDays = JSON.parse(localStorage.getItem('pf_completed_days') || '{}');
+
+        let daysDoneCount = 0;
+        for (let i = 0; i < totalDays; i++) {
+          if (completedDays[i]) daysDoneCount++;
+        }
+
+        // لو اليوزر خلص كل أيام الأسبوع
+        if (daysDoneCount >= totalDays) {
+
+          // 1. زود عداد الأسابيع بواحد، وصفر عداد الأيام
+          let weeksDone = parseInt(localStorage.getItem('pf_completed_weeks') || '0') + 1;
+          localStorage.setItem('pf_completed_weeks', weeksDone);
+          localStorage.removeItem('pf_completed_days');
+
+          // 🟢 PHASE 3: لو خلص 4 أسابيع، طلعله الفورم الشهري لتغيير التمارين 🟢
+          if (weeksDone >= 4) {
+            showMonthlyModal(plan);
+            return; // بنوقف اللوجيك هنا لحد ما يملى الفورم
+          }
+
+          // 🟢 PHASE 2: لو لسه مخلصش الـ 4 أسابيع، نعمل تشيك الـ Deload العادي 🟢
+          const statsRes = await fetch('/api/weekly-stats');
+          const statsData = await statsRes.json();
+
+          if (statsData.deload_suggested) {
+            alert("🔥 Weekly Cycle Complete!\n\nWe noticed you pushed very hard or reported fatigue. We've auto-adjusted your next week to be a DELOAD week to help your CNS recover.");
+            await fetch('/api/save-plan', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userData: currentUserData })
+            });
+          } else {
+            alert("🔥 Weekly Cycle Complete!\n\nGreat job! Your next week is ready, keep pushing those numbers up!");
+          }
+
+          setTimeout(() => { window.location.reload(); }, 1500);
+        }
+      } catch (err) { console.warn("Progress check failed:", err); }
+    }
+
+    function showMonthlyModal(plan) {
+      // نحط الوزن والهدف الحالي بتاعه في الفورم
+      document.getElementById('meso-weight').value = currentUserData.weight || '';
+      document.getElementById('meso-goal').value = currentUserData.goal || 'maintain';
+
+      // نلف على خطته ونجيب كل التمارين اللي لعبها الشهر ده
+      const allExercises = new Set();
+      plan.ai_days.forEach(day => {
+        day.exercises.forEach(ex => allExercises.add(ex.name));
+      });
+
+      // نحط التمارين دي كاختيارات جوه Dropdown الـ Blacklist
+      const selectDisliked = document.getElementById('meso-disliked');
+      selectDisliked.innerHTML = '';
+      allExercises.forEach(exName => {
+        const opt = document.createElement('option');
+        opt.value = exName;
+        opt.textContent = exName;
+        selectDisliked.appendChild(opt);
+      });
+
+      // ظهر الـ Modal
+      document.getElementById('meso-modal').hidden = false;
+    }
+
+    async function submitMonthlyCheckin() {
+      const btn = document.querySelector('.btn-meso-submit');
+      btn.disabled = true;
+      btn.textContent = 'Generating New Phase... ⚙️';
+
+      const newWeight = document.getElementById('meso-weight').value;
+      const newGoal = document.getElementById('meso-goal').value;
+
+      // جيب التمارين اللي اختار إنه بيكرهها
+      const selectDisliked = document.getElementById('meso-disliked');
+      const disliked = Array.from(selectDisliked.selectedOptions).map(opt => opt.value);
+
+      // تحديث الداتا
+      currentUserData.weight = newWeight;
+      currentUserData.goal = newGoal;
+
+      // نحتفظ بالتمارين اللي كان بيكرهها قبل كده، ونضيف عليها الجديد (بدون تكرار)
+      let oldDisliked = currentUserData.dislikedExercises || [];
+      currentUserData.dislikedExercises = [...new Set([...oldDisliked, ...disliked])];
+
+      try {
+        // نبعت الداتا للـ Backend عشان يبني خطة من الصفر ويطرد التمارين المكروهة
+        await fetch('/api/save-plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userData: currentUserData })
+        });
+
+        // صفر عداد الأسابيع عشان يبدأ شهر (Mesocycle) جديد
+        localStorage.setItem('pf_completed_weeks', '0');
+
+        btn.textContent = 'Done! ✅';
+        setTimeout(() => { window.location.reload(); }, 1000);
+      } catch (e) {
+        alert('Error generating plan. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Generate New Phase Plan';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // بنستنى ثانية عشان الـ Dashboard تحمل الداتا براحتها
+      setTimeout(() => {
+        checkProgress();
+        loadWater();
+        loadWeight();
+      }, 1000);
+    });
+  </script>
+</body>
+
+</html>
