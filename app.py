@@ -90,8 +90,8 @@ def _load_pose_model():
             from ultralytics import YOLO
         except ImportError as e:
             raise ImportError(
-                "Workout camera needs ultralytics (large download). "
-                "Free disk space, then: py -m pip install ultralytics"
+                "ميزة الكاميرا غير متاحة على هذا السيرفر. "
+                "Camera AI requires a server with more RAM (ultralytics/torch not installed)."
             ) from e
         pose_model = YOLO(model_path)
 
