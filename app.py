@@ -86,10 +86,7 @@ def _load_pose_model():
         model_path = str(_APP_ROOT / "yolo11n-pose.pt")
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"yolo11n-pose.pt model not found at {model_path}")
-        try:
-            from ultralytics import YOLO
-        except ImportError:
-            pass
+        from ultralytics import YOLO
         pose_model = YOLO(model_path)
 
 # ══════════════════════════════════════════════════════════════
