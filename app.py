@@ -88,10 +88,8 @@ def _load_pose_model():
             raise FileNotFoundError(f"yolo11n-pose.pt model not found at {model_path}")
         try:
             from ultralytics import YOLO
-        except ImportError as e:
-            raise ImportError(
-                "Workout camera needs ultralytics. Run: pip install ultralytics"
-            ) from e
+        except ImportError:
+            pass
         pose_model = YOLO(model_path)
 
 # ══════════════════════════════════════════════════════════════
